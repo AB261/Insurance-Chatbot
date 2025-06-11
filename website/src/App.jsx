@@ -160,8 +160,8 @@ function App() {
         </section>
       </main>
 
-      {/* Fixed Chatbot */}
-      <aside className="w-full md:w-96 h-screen fixed md:static bottom-0 right-0 bg-white shadow-2xl border-l border-gray-200 z-50">
+      {/* Fixed Chatbot - Updated positioning */}
+      <aside className="w-full md:w-96 h-screen md:h-screen fixed md:sticky md:top-0 bottom-0 md:bottom-auto right-0 bg-white shadow-2xl border-l border-gray-200 z-50">
         <Chatbot />
       </aside>
     </div>
