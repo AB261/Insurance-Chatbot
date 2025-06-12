@@ -1,6 +1,6 @@
 # Insurance-Chatbot
 
-This repository contains a simple React application demonstrating an insurance landing page with an integrated chatbot to help users submit insurance claims.
+This repository contains a React application demonstrating an insurance landing page with an integrated chatbot to help users submit insurance claims.
 
 ## Running the site
 
