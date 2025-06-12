@@ -70,6 +70,8 @@ function Chatbot() {
 
   const handleFile = (e) => {
     const files = Array.from(e.target.files)
+    // Clear the input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = ''
     if (files.length === 0) return
 
     files.forEach(file => {
