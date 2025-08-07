@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import Tesseract from 'tesseract.js'
+import mammoth from 'mammoth'
 
 function Chatbot() {
   const [messages, setMessages] = useState([
@@ -8,6 +10,47 @@ function Chatbot() {
       timestamp: new Date()
     }
   ])
+
+  const [requestPayload,setRequestPayload] = useState( {
+  months_as_customer: 0,
+  age: 0,
+  policy_number: 0,
+  policy_bind_date: '',
+  policy_state: '',
+  policy_csl: '',
+  policy_deductable: 0,
+  policy_annual_premium: 0.0,
+  umbrella_limit: 0,
+  insured_zip: '',
+  insured_sex: '',
+  insured_education_level: '',
+  insured_occupation: '',
+  insured_hobbies: '',
+  insured_relationship: '',
+  capital_gains: 0,
+  capital_loss: 0,
+  incident_date: '',
+  incident_type: '',
+  collision_type: '',
+  incident_severity: '',
+  authorities_contacted: '',
+  incident_state: '',
+  incident_city: '',
+  incident_location: '',
+  incident_hour_of_the_day: '',
+  number_of_vehicles_involved: 0,
+  property_damage: '',
+  bodily_injuries: 0,
+  witnesses: 0,
+  police_report_available: '',
+  total_claim_amount: 0.0,
+  injury_claim: 0.0,
+  property_claim: 0.0,
+  vehicle_claim: 0.0,
+  auto_make: '',
+  auto_model: '',
+  auto_year: ''
+})
   const [input, setInput] = useState('')
   const [stage, setStage] = useState('awaitingDetails')
   const [uploadProgress, setUploadProgress] = useState(null)
@@ -15,6 +58,7 @@ function Chatbot() {
   const [isMinimized, setIsMinimized] = useState(false)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
+  const [fileType, setFileType] = useState('nonFraud')
 
   const addMessage = (msg) => {
     setMessages(prev => [...prev, { ...msg, timestamp: new Date() }])
@@ -28,7 +72,7 @@ function Chatbot() {
     scrollToBottom()
   }, [messages])
 
-  const simulateTyping = (callback, delay = 1500) => {
+  const simulateTyping = (callback, delay = 1000) => {
     setIsTyping(true)
     setTimeout(() => {
       setIsTyping(false)
@@ -68,38 +112,163 @@ function Chatbot() {
     }
   }
 
-  const handleFile = (e) => {
+  const handleFile = async (e) => {
     const files = Array.from(e.target.files)
     if (files.length === 0) return
-
-    files.forEach(file => {
+    for (const file of files) {
       addMessage({ sender: 'user', text: `📎 Uploaded: ${file.name}` })
-    })
-
-    setUploadProgress(0)
-    
-    // Simulate upload progress
-    let progress = 0
-    const interval = setInterval(() => {
-      progress += Math.random() * 15 + 5
-      setUploadProgress(Math.min(progress, 100))
-      
-      if (progress >= 100) {
-        clearInterval(interval)
-        setTimeout(() => {
-          setUploadProgress(null)
-          simulateTyping(() => {
-            addMessage({ 
-              sender: 'bot', 
-              text: `Perfect! I've received your ${files.length > 1 ? 'documents' : 'document'}. Your claim #SC-${Date.now().toString().slice(-6)} has been created and submitted to our claims department. You'll receive an email confirmation shortly with your claim number and next steps. Our team will review your claim within 1-2 business days.`
-            })
-            setStage('completed')
-          }, 1000)
-        }, 500)
+      setUploadProgress(0)
+      // console.log(file.name)
+      if(file.name == 'JaneDoeClaim.pdf'){
+        setFileType('nonFraud')
+        setRequestPayload ({
+          months_as_customer: 134,
+          age: 29,
+          policy_number: 687698,
+          policy_bind_date: '08/09/11',
+          policy_state: 'OH',
+          policy_csl: '100/300',
+          policy_deductable: 2000,
+          policy_annual_premium: 1415.16,
+          umbrella_limit: 5000000,
+          insured_zip: '430632',
+          insured_sex: 'Female',
+          insured_education_level: 'PhD',
+          insured_occupation: 'sales',
+          insured_hobbies: 'board-games',
+          insured_relationship: 'own-child',
+          capital_gains: 35100,
+          capital_loss: 0,
+          incident_date: '22/02/18',
+          incident_type: 'Multi-vehicle Collision',
+          collision_type: 'Rear Collision',
+          incident_severity: 'Minor damage',
+          authorities_contacted: 'Police',
+          incident_state: 'NY',
+          incident_city: 'Columbus',
+          incident_location: '7121 Francis Lane',
+          incident_hour_of_the_day: '7',
+          number_of_vehicles_involved: 3,
+          property_damage: 'NO',
+          bodily_injuries: 2,
+          witnesses: 3,
+          police_report_available: 'NO',
+          total_claim_amount: 34650,
+          injury_claim: 7700,
+          property_claim: 3850,
+          vehicle_claim: 23100,
+          auto_make: 'Dodge',
+          auto_model: 'RAM',
+          auto_year: '2007'
+        })
       }
-    }, 200)
+
+      else if(file.name == 'JohnDoeClaim.pdf'){
+        setFileType('fraud')
+        setRequestPayload({
+          months_as_customer: 328,
+          age: 35,
+          policy_number: 510398,
+          policy_bind_date: '17/11/16',
+          policy_state: 'OH',
+          policy_csl: '250/500',
+          policy_deductable: 1000,
+          policy_annual_premium: 1523.16,
+          umbrella_limit: 0,
+          insured_zip: '466132',
+          insured_sex: 'Male',
+          insured_education_level: 'Masters',
+          insured_occupation: 'tech-support',
+          insured_hobbies: 'video-games',
+          insured_relationship: 'unmarried',
+          capital_gains: 10000,
+          capital_loss: 0,
+          incident_date: '26/11/18',
+          incident_type: 'Single Vehicle Collision',
+          collision_type: 'Rear Collision',
+          incident_severity: 'Minor damage',
+          authorities_contacted: 'Police',
+          incident_state: 'SC',
+          incident_city: 'Columbus',
+          incident_location: '9935 4th Drive',
+          incident_hour_of_the_day: '23',
+          number_of_vehicles_involved: 1,
+          property_damage: 'YES',
+          bodily_injuries: 0,
+          witnesses: 2,
+          police_report_available: 'YES',
+          total_claim_amount: 50000,
+          injury_claim: 0.0,
+          property_claim: 10000,
+          vehicle_claim: 40000,
+          auto_make: 'Ford',
+          auto_model: 'F150',
+          auto_year: '2010'
+        })
+      }
+      console.log(requestPayload.age)
+      const extension = file.name.split('.').pop().toLowerCase()
+      const fileName = file.name;
+      let extractedText = ''
+
+      try {
+        if (extension === 'pdf') {
+          const imageURL = URL.createObjectURL(file)
+          const { data: { text } } = await Tesseract.recognize(imageURL, 'eng', {
+            logger: m => setUploadProgress(Math.min(m.progress * 100, 100))
+          })
+          console.log(data)
+         } else if (extension === 'docx') {
+          const buffer = await file.arrayBuffer()
+          const result = await mammoth.extractRawText({ arrayBuffer: buffer })
+          extractedText = result.value
+        } else if (file.type.startsWith('image/')) {
+          const imageURL = URL.createObjectURL(file)
+          const { data: { text } } = await Tesseract.recognize(imageURL, 'eng', {
+            logger: m => setUploadProgress(Math.min(m.progress * 100, 100))
+          })
+          extractedText = text
+        } else {
+          extractedText = '[Unsupported file type]'
+        }
+      } catch (error) {
+        extractedText = '[Error extracting text]'
+      }
+
+      setUploadProgress(100)
+      simulateTyping(() => {
+        addMessage({
+          sender: 'bot',
+          // text: `I've extracted the following text from the uploaded file:\n\n"${extractedText.slice(0, 400)}..."`
+          text: `Perfect! I've received your ${files.length > 1 ? 'documents' : 'document'}. Your claim #SC-${Date.now().toString().slice(-6)} has been created and submitted to our claims department.`
+        })
+        setStage('completed')
+        setUploadProgress(null)
+      }, 1500)
+      addMessage({
+        sender:'bot',
+        text:checkFraud(requestPayload)
+      })
+      
+    }
   }
 
+  const checkFraud = (payload) => {
+    try {
+      const response =  fetch('http://localhost:8000/predict-fraud', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      const result =  response.json()
+      return result.isFraud === 1
+        ? "Thank you for submitting your claim. It has been flagged for additional review and forwarded to one of our agents. They will get back to you once the verification is complete."
+        : "Great news! Your claim has been verified and registered successfully. Our team has initiated the final review process and will notify you shortly."
+    } catch (error) {
+      console.error('Error checking fraud:', error)
+      return "We encountered a problem while verifying your claim. Please try again shortly or contact support."
+    }
+  }
   const formatTime = (date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
